@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "77633190246",
+    "project_id": "prescription-app-2d3a7",
+    "storage_bucket": "prescription-app-2d3a7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:77633190246:android:9943f26cd2e8076f8db0a7",
+        "android_client_info": {
+          "package_name": "com.example.prescription_document"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCoPmL19pdcqtLq3gadzFwMyta4NFtgv78"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

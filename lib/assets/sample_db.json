@@ -1,0 +1,45 @@
+
+{
+    "users": {
+      "UID123": {
+        "displayName": "John Doe",
+        "email": "johndoe@example.com",
+        "createdAt": "2023-11-17T00:00:00Z"
+      }
+    },
+    "members": {
+      "UID123": {
+        "MID456": {
+          "name": "Jane Doe",
+          "relationship": "Wife",
+          "createdAt": "2023-11-17T00:00:00Z"
+        }
+      }
+    },
+    "doctors": {
+      "DID789": {
+        "name": "Dr. Smith",
+        "specialty": "Cardiology",
+        "contact": "123456789",
+        "createdAt": "2023-11-17T00:00:00Z"
+      }
+    },
+    "visits": {
+      "VID1011": {
+        "userId": "UID123",
+        "memberId": "MID456",
+        "doctorId": "DID789",
+        "date": "2023-11-17T00:00:00Z",
+        "createdAt": "2023-11-17T00:00:00Z"
+      }
+    },
+    "documents": {
+      "DOC1213": {
+        "visitId": "VID1011",
+        "type": "Prescription",
+        "url": "https://storage.googleapis.com/example-url",
+        "createdAt": "2023-11-17T00:00:00Z"
+      }
+    }
+  }
+  
