@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:prescription_document/bindings/home_page_binding.dart';
 import 'package:prescription_document/firebase_options.dart';
-import 'package:prescription_document/home_page.dart';
+import 'package:prescription_document/views/home/home_page.dart';
 import 'package:prescription_document/routes/app_pages.dart';
 import 'package:prescription_document/routes/app_routes.dart';
 

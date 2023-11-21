@@ -28,8 +28,6 @@ doctors (Collection)
 
 ------------ X ------------
 Users Collection
-
-users (Collection)
 |
 |--- UID123 (Document)
      |-- displayName: "John Doe"
@@ -37,7 +35,6 @@ users (Collection)
      |-- createdAt: Timestamp
 
 Members Sub-Collection (Under Each User)
-users (Collection)
 |--- UID123 (Document)
     |--- members (Sub-collection)
         |--- MID456 (Document)
@@ -46,7 +43,6 @@ users (Collection)
             |-- createdAt: Timestamp
 
 Visits Sub-Collection (Under Each Member)
-users (Collection)
 |--- UID123 (Document)
     |--- members (Sub-collection)
         |--- MID456 (Document)

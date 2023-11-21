@@ -1,11 +1,11 @@
 import 'package:get/get.dart';
-import 'package:prescription_document/controllers/member_controller.dart';
+import 'package:prescription_document/controllers/firebase_controller.dart';
 
 class HomeBinding extends Bindings {
   @override
   void dependencies() async {
-    //TODO: Dynamic User ID
-    Get.put(MemberController(userId: 'UID123'));
+    //TODO: Dynamic User ID when Logged In
+    Get.put(HomeFirebaseController(userId: 'UID123'));
 
     // final sharedPreference = await SharedPreferences.getInstance();
     // Get.lazyPut(()=>sharedPreference);
