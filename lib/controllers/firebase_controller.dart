@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:prescription_document/models/eye_drop_moderl.dart';
 import 'package:prescription_document/models/member_model.dart';
 import 'package:prescription_document/models/prescription_model.dart';
 import 'package:prescription_document/models/reports_model.dart';
@@ -10,6 +11,7 @@ class HomeFirebaseController extends GetxController {
   final String userId; // ID of the specific user
 
   var visits = <VisitModel>[].obs; // Observable list of visits
+  var eyeDrops = <EyeDropModel>[].obs; // Observable list of eye drops
   var prescriptions = <PrescriptionModel>[].obs; // Observable list of prescriptions
   var report = <ReportModel>[].obs; // Observable list of reports
 
@@ -43,6 +45,24 @@ class HomeFirebaseController extends GetxController {
         .collection('visits')
         .snapshots()
         .map((query) => query.docs.map((item) => VisitModel.fromDocumentSnapshot(item)).toList());
+  }
+
+  // Eyedrops collection stream
+  Stream<List<EyeDropModel>> listenToEyeDrops(MemberModel member) {
+    // |--- UID123 (Document)
+    // |--- members (Sub-collection)
+    //     |--- MID456 (Document)
+    //         |--- eyeDrops (Sub-collection)
+    //             |--- EID789 (Document)
+    // Stream of eye drops from Firestore
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('members')
+        .doc(member.memberId)
+        .collection('eyeDrops')
+        .snapshots()
+        .map((query) => query.docs.map((item) => EyeDropModel.fromDocumentSnapshot(item)).toList()..sort((a, b) => a.intervalHours.compareTo(b.intervalHours)));
   }
 
   // Prescription and Reports collection stream
@@ -123,6 +143,29 @@ class HomeFirebaseController extends GetxController {
 
     // Add to Firestore under the test user
     await visits.add(visit.toJson()).then((docRef) => print('Visit added with ID: ${docRef.id}')).catchError((error) => print('Failed to add visit: $error'));
+  }
+
+  //=================== Eye Drop Related Functions ================================
+  // Add Eye Drop to the current User's Firestore collection
+  Future<void> addEyeDrop(EyeDropModel eyeDrop, MemberModel member) async {
+    // Get reference to Firestore
+    CollectionReference eyeDrops = FirebaseFirestore.instance.collection('users').doc(userId).collection('members').doc(member.memberId).collection('eyeDrops');
+
+    // Add to Firestore under the test user
+    await eyeDrops.add(eyeDrop.toJson()).then((docRef) => print('Eye Drop added with ID: ${docRef.id}')).catchError((error) => print('Failed to add eye drop: $error'));
+  }
+
+  // Update Eye Drop to the current User's Firestore collection
+  Future<void> updateEyeDrop(EyeDropModel eyeDrop, MemberModel member) async {
+    // Get reference to Firestore
+    CollectionReference eyeDrops = FirebaseFirestore.instance.collection('users').doc(userId).collection('members').doc(member.memberId).collection('eyeDrops');
+
+    // Update to Firestore under the test user
+    await eyeDrops
+        .doc(eyeDrop.eyeDropId)
+        .update(eyeDrop.toJson())
+        .then((docRef) => print('Eye Drop updated with ID: ${eyeDrop.eyeDropId}'))
+        .catchError((error) => print('Failed to update eye drop: $error'));
   }
 
   //=================== Member Realted Functions ================================
