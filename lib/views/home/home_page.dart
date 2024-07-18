@@ -1,10 +1,9 @@
-import 'dart:math';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:prescription_document/controllers/firebase_controller.dart';
 import 'package:prescription_document/models/member_model.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:prescription_document/views/members/member_details_page.dart';
 import 'package:prescription_document/views/visits/visits_list_page.dart';
 
@@ -14,13 +13,16 @@ Future<void> addUser() async {
 }
 
 class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+
   @override
   Widget build(BuildContext context) {
-    final HomeFirebaseController memberController = Get.find<HomeFirebaseController>();
+    final HomeFirebaseController memberController =
+        Get.find<HomeFirebaseController>();
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home'),
+        title: const Text('Home'),
       ),
       body: SafeArea(
         child: Column(
@@ -30,10 +32,10 @@ class HomePage extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  CircleAvatar(
+                  const CircleAvatar(
                       // Add your logic for the avatar here
                       ),
-                  Text(
+                  const Text(
                     'Hi, Riyad 👋',
                     style: TextStyle(
                       fontSize: 24,
@@ -41,7 +43,7 @@ class HomePage extends StatelessWidget {
                     ),
                   ),
                   IconButton(
-                    icon: Icon(Icons.settings),
+                    icon: const Icon(Icons.settings),
                     onPressed: () {
                       // Add your logic for the settings icon here
                     },
@@ -75,9 +77,9 @@ class HomePage extends StatelessWidget {
 
             Expanded(
               child: Obx(() {
-                if (memberController.members.isEmpty) {
-                  return Center(child: const Text('No members found.'));
-                }
+                // if (memberController.members.isEmpty) {
+                //   return const Center(child: Text('No members found.'));
+                // }
 
                 return GridView.builder(
                   padding: const EdgeInsets.all(16),
@@ -87,12 +89,14 @@ class HomePage extends StatelessWidget {
                     mainAxisSpacing: 16,
                     childAspectRatio: 2,
                   ),
-                  itemCount: memberController.members.length + 1, // Add one for the 'Add' button
+                  itemCount: memberController.members.length +
+                      1, // Add one for the 'Add' button
                   itemBuilder: (context, index) {
                     if (index < memberController.members.length) {
-                      return MemberWidget(member: memberController.members[index]);
+                      return MemberWidget(
+                          member: memberController.members[index]);
                     } else {
-                      return AddFamilyMemberButton();
+                      return const AddFamilyMemberButton();
                     }
                   },
                 );
@@ -104,9 +108,9 @@ class HomePage extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           // Navigate to the MemberDetailsPage
-          Get.to(() => MemberDetailsPage());
+          Get.to(() => const MemberDetailsPage());
         },
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -123,11 +127,11 @@ class MemberWidget extends StatelessWidget {
       onTap: () {
         // Navigate to the MemberDetailsPage
         // Log going to member.name Visits Page
-        print('Going to ${member.name} page');
+        log('Going to ${member.name} page');
         Get.to(() => VisitsPage(member: member));
       },
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.grey[200],
           borderRadius: BorderRadius.circular(12),
@@ -155,6 +159,8 @@ class MemberWidget extends StatelessWidget {
 }
 
 class AddFamilyMemberButton extends StatelessWidget {
+  const AddFamilyMemberButton({super.key});
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -167,7 +173,7 @@ class AddFamilyMemberButton extends StatelessWidget {
           color: Colors.grey[200],
           borderRadius: BorderRadius.circular(12),
         ),
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }

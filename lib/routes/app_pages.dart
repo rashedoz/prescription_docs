@@ -12,14 +12,14 @@ class AppPages {
     //   binding: HomeBinding(),
     // ),
     GetPage(
-      name: AppRoutes.home_screen,
-      page: () => HomePage(),
+      name: AppRoutes.homeScreen,
+      page: () => const HomePage(),
       binding: HomeBinding(),
     ),
 
     GetPage(
-      name: AppRoutes.add_member,
-      page: () => AddMemberPage(),
+      name: AppRoutes.addMember,
+      page: () => const AddMemberPage(),
       binding: HomeBinding(),
     ),
   ];

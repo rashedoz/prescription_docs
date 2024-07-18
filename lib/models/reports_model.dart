@@ -4,6 +4,8 @@
 //                             |-- reportedBy: "Dr. Smith"
 //                             |-- createdAt: Timestamp
 
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ReportModel {
@@ -12,7 +14,11 @@ class ReportModel {
   List<dynamic> images;
   DateTime createdAt;
 
-  ReportModel({required this.reportId, required this.reportedBy, required this.images, required this.createdAt});
+  ReportModel(
+      {required this.reportId,
+      required this.reportedBy,
+      required this.images,
+      required this.createdAt});
 
   factory ReportModel.fromDocumentSnapshot(DocumentSnapshot doc) {
     try {
@@ -25,8 +31,8 @@ class ReportModel {
       );
     } catch (e) {
       // Handle the exception, you might want to log this error or set default values
-      print('Error converting document snapshot to ReportModel: $e');
-      throw e; // Re-throw the exception after logging it or handling it as necessary
+      log('Error converting document snapshot to ReportModel: $e');
+      rethrow; // Re-throw the exception after logging it or handling it as necessary
     }
   }
 

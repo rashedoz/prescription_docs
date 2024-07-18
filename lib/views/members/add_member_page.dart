@@ -1,13 +1,17 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:prescription_document/models/member_model.dart';
 
 class AddMemberPage extends StatefulWidget {
+  const AddMemberPage({super.key});
+
   @override
-  _AddMemberPageState createState() => _AddMemberPageState();
+  AddMemberPageState createState() => AddMemberPageState();
 }
 
-class _AddMemberPageState extends State<AddMemberPage> {
+class AddMemberPageState extends State<AddMemberPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _ageController = TextEditingController();
@@ -43,7 +47,10 @@ class _AddMemberPageState extends State<AddMemberPage> {
         .collection('members');
 
     // Add to Firestore under the test user
-    await members.add(member.toJson()).then((docRef) => print('Member added with ID: ${docRef.id}')).catchError((error) => print('Failed to add member: $error'));
+    await members
+        .add(member.toJson())
+        .then((docRef) => log('Member added with ID: ${docRef.id}'))
+        .catchError((error) => log('Failed to add member: $error'));
   }
 
   // Future<void> addUser() async {
@@ -66,7 +73,7 @@ class _AddMemberPageState extends State<AddMemberPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Member'),
+        title: const Text('Add Member'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -84,14 +91,14 @@ class _AddMemberPageState extends State<AddMemberPage> {
                   child: Container(
                     height: 150,
                     color: Colors.grey[200],
-                    child: Icon(Icons.camera_alt, color: Colors.grey[800]),
                     alignment: Alignment.center,
+                    child: Icon(Icons.camera_alt, color: Colors.grey[800]),
                   ),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 TextFormField(
                   controller: _nameController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Patient Name',
                     border: OutlineInputBorder(),
                   ),
@@ -102,10 +109,10 @@ class _AddMemberPageState extends State<AddMemberPage> {
                     return null;
                   },
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 TextFormField(
                   controller: _ageController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Patient Age',
                     border: OutlineInputBorder(),
                   ),
@@ -117,10 +124,10 @@ class _AddMemberPageState extends State<AddMemberPage> {
                     return null;
                   },
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 TextFormField(
                   controller: _relationshipController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Date',
                     border: OutlineInputBorder(),
                     suffixIcon: Icon(Icons.calendar_today),
@@ -138,12 +145,12 @@ class _AddMemberPageState extends State<AddMemberPage> {
                     }
                   },
                 ),
-                SizedBox(height: 24),
+                const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
                       // TODO: Implement the logic to save the member
-                      print('Save the member');
+                      log('Save the member');
                       _addMemberToFirestore();
                       // addUser();
                     }

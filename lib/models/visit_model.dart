@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class VisitModel {
@@ -9,7 +11,12 @@ class VisitModel {
   String reason;
   DateTime createdAt;
 
-  VisitModel({required this.visitId, required this.doctorId, required this.date, required this.createdAt, required this.reason});
+  VisitModel(
+      {required this.visitId,
+      required this.doctorId,
+      required this.date,
+      required this.createdAt,
+      required this.reason});
 
   factory VisitModel.fromDocumentSnapshot(DocumentSnapshot doc) {
     try {
@@ -24,8 +31,8 @@ class VisitModel {
       );
     } catch (e) {
       // Handle the exception, you might want to log this error or set default values
-      print('Error converting document snapshot to VisitModel: $e');
-      throw e; // Re-throw the exception after logging it or handling it as necessary
+      log('Error converting document snapshot to VisitModel: $e');
+      rethrow; // Re-throw the exception after logging it or handling it as necessary
     }
   }
   Map<String, dynamic> toJson() => {

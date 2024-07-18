@@ -7,6 +7,8 @@ class MemberDetailsPage extends StatelessWidget {
   final String memberName = "Father";
   final String memberDOB = "14 Sep 1980 (43y/2m)";
 
+  const MemberDetailsPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,12 +20,12 @@ class MemberDetailsPage extends StatelessWidget {
           ListTile(
             title: Text(memberName),
             subtitle: Text(memberDOB),
-            leading: Icon(Icons.person),
+            leading: const Icon(Icons.person),
           ),
           Expanded(
             child: GridView.builder(
-              padding: EdgeInsets.all(8),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              padding: const EdgeInsets.all(8),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 10,
@@ -34,11 +36,12 @@ class MemberDetailsPage extends StatelessWidget {
                   onTap: () {
                     // Navigate to the doctor details or edit page
                   },
-                  child: Card(
+                  child: const Card(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.medical_services, size: 40), // Replace with doctor image
+                        Icon(Icons.medical_services,
+                            size: 40), // Replace with doctor image
                         Text('Doctor Name'),
                         Text('Specialization'),
                       ],
@@ -53,7 +56,7 @@ class MemberDetailsPage extends StatelessWidget {
               // Navigate to the Add Doctor Page
               Get.to(() => AddDoctorPage());
             },
-            child: Text('Add Doctor'),
+            child: const Text('Add Doctor'),
           ),
         ],
       ),

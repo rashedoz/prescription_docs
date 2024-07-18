@@ -4,6 +4,8 @@
 //                             |-- prescribedBy: "Dr. Smith"
 //                             |-- createdAt: Timestamp
 
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PrescriptionModel {
@@ -12,7 +14,11 @@ class PrescriptionModel {
   List<dynamic> images;
   DateTime createdAt;
 
-  PrescriptionModel({required this.prescriptionId, required this.prescribedBy, required this.images, required this.createdAt});
+  PrescriptionModel(
+      {required this.prescriptionId,
+      required this.prescribedBy,
+      required this.images,
+      required this.createdAt});
 
   factory PrescriptionModel.fromDocumentSnapshot(DocumentSnapshot doc) {
     try {
@@ -25,8 +31,8 @@ class PrescriptionModel {
       );
     } catch (e) {
       // Handle the exception, you might want to log this error or set default values
-      print('Error converting document snapshot to PrescriptionModel: $e');
-      throw e; // Re-throw the exception after logging it or handling it as necessary
+      log('Error converting document snapshot to PrescriptionModel: $e');
+      rethrow; // Re-throw the exception after logging it or handling it as necessary
     }
   }
 
