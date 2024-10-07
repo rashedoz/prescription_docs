@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:prescription_document/models/member_model.dart';
 
 class AddMemberPage extends StatefulWidget {
@@ -152,6 +153,8 @@ class AddMemberPageState extends State<AddMemberPage> {
                       // TODO: Implement the logic to save the member
                       log('Save the member');
                       _addMemberToFirestore();
+                      // Get.back();
+                      Navigator.pop(context);
                       // addUser();
                     }
                   },
