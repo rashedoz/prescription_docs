@@ -10,6 +10,7 @@ import 'package:prescription_document/common/app_colors.dart';
 import 'package:prescription_document/common/widgets/common_app_button.dart';
 import 'package:prescription_document/controllers/image_controller/image_picker_controller.dart';
 import 'package:prescription_document/models/member_model.dart';
+import 'package:prescription_document/views/auth/widget/user_image_picker.dart';
 
 class AddMemberPage extends StatefulWidget {
   const AddMemberPage({super.key});
@@ -84,8 +85,7 @@ class AddMemberPageState extends State<AddMemberPage> {
       appBar: AppBar(
         title: const Text('Add Member'),
       ),
-      body: GetBuilder<ImagePickerController>(builder: (imagePickerController) {
-        return Padding(
+      body:  Padding(
           padding: const EdgeInsets.all(16.0),
           child: Form(
             key: _formKey,
@@ -94,32 +94,33 @@ class AddMemberPageState extends State<AddMemberPage> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
-                  GestureDetector(
-                    onTap: () {
-                      _showImageSourceActionSheet(
-                          context, imagePickerController);
-                      // TODO: Implement image upload functionality
-                    },
-                    child: imagePickerController.selectedImagePath.value == ''
-                        ? Container(
-                            height: 150,
-                            color: const Color(0xFFCAC4ED),
-                            alignment: Alignment.center,
-                            child:
-                                Icon(Icons.camera_alt, color: Colors.grey[800]),
-                          )
-                        : Container(
-                            height: 150,
-                            color: const Color(0xFFCAC4ED),
-                            alignment: Alignment.center,
-                            child: Image.file(
-                              File(imagePickerController
-                                  .selectedImagePath.value),
-                              width: double.infinity,
-                              height: 150,
-                            ),
-                          ),
-                  ),
+                  UserImagePicker(containerColor: const Color(0xFFCAC4ED),),
+                  // GestureDetector(
+                  //   onTap: () {
+                  //     _showImageSourceActionSheet(
+                  //         context, imagePickerController);
+                  //     // TODO: Implement image upload functionality
+                  //   },
+                  //   child: imagePickerController.selectedImagePath.value == ''
+                  //       ? Container(
+                  //           height: 150,
+                  //           color: const Color(0xFFCAC4ED),
+                  //           alignment: Alignment.center,
+                  //           child:
+                  //               Icon(Icons.camera_alt, color: Colors.grey[800]),
+                  //         )
+                  //       : Container(
+                  //           height: 150,
+                  //           color: const Color(0xFFCAC4ED),
+                  //           alignment: Alignment.center,
+                  //           child: Image.file(
+                  //             File(imagePickerController
+                  //                 .selectedImagePath.value),
+                  //             width: double.infinity,
+                  //             height: 150,
+                  //           ),
+                  //         ),
+                  // ),
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _nameController,
@@ -210,43 +211,42 @@ class AddMemberPageState extends State<AddMemberPage> {
               ),
             ),
           ),
-        );
-      }),
+        )
     );
   }
 
-  void _showImageSourceActionSheet(
-      BuildContext context, ImagePickerController imagePickerController) {
-    showModalBottomSheet(
-        context: context,
-        builder: (BuildContext context) {
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              ListTile(
-                leading: const Icon(Icons.photo_camera),
-                title: Text(
-                  'Camera',
-                  style: Get.theme.textTheme.bodyMedium,
-                ),
-                onTap: () {
-                  imagePickerController.pickImage(ImageSource.camera);
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.photo_library),
-                title: Text(
-                  'Gallery',
-                  style: Get.theme.textTheme.bodyMedium,
-                ),
-                onTap: () {
-                  imagePickerController.pickImage(ImageSource.gallery);
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          );
-        });
-  }
+  // void _showImageSourceActionSheet(
+  //     BuildContext context, ImagePickerController imagePickerController) {
+  //   showModalBottomSheet(
+  //       context: context,
+  //       builder: (BuildContext context) {
+  //         return Column(
+  //           mainAxisSize: MainAxisSize.min,
+  //           children: <Widget>[
+  //             ListTile(
+  //               leading: const Icon(Icons.photo_camera),
+  //               title: Text(
+  //                 'Camera',
+  //                 style: Get.theme.textTheme.bodyMedium,
+  //               ),
+  //               onTap: () {
+  //                 imagePickerController.pickImage(ImageSource.camera);
+  //                 Navigator.pop(context);
+  //               },
+  //             ),
+  //             ListTile(
+  //               leading: const Icon(Icons.photo_library),
+  //               title: Text(
+  //                 'Gallery',
+  //                 style: Get.theme.textTheme.bodyMedium,
+  //               ),
+  //               onTap: () {
+  //                 imagePickerController.pickImage(ImageSource.gallery);
+  //                 Navigator.pop(context);
+  //               },
+  //             ),
+  //           ],
+  //         );
+  //       });
+  // }
 }

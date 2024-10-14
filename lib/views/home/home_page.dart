@@ -8,6 +8,7 @@ import 'package:prescription_document/common/widgets/common_app_button.dart';
 import 'package:prescription_document/controllers/firebase_controller.dart';
 import 'package:prescription_document/controllers/home_controller/home_controller.dart';
 import 'package:prescription_document/models/member_model.dart';
+import 'package:prescription_document/views/auth/auth_screen.dart';
 import 'package:prescription_document/views/visits/visits_list_page.dart';
 
 class HomePage extends StatelessWidget {
@@ -30,9 +31,14 @@ class HomePage extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const CircleAvatar(
-                      // Add your logic for the avatar here
-                      ),
+                  InkWell(
+                    onTap: (){
+                      Get.to(()=>const AuthScreen());
+                    },
+                    child: const CircleAvatar(
+                        // Add your logic for the avatar here
+                        ),
+                  ),
                   const SizedBox(
                     width: 15,
                   ),

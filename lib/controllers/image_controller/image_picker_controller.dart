@@ -11,12 +11,14 @@ class ImagePickerController extends GetxController {
   RxString imageUrl = ''.obs;
   FirebaseStorage storage = FirebaseStorage.instance;
   FirebaseFirestore firestore = FirebaseFirestore.instance;
+  XFile? pickedImage;
 
   Future<void> pickImage(ImageSource source) async {
     final pickedFile = await ImagePicker().pickImage(source: source);
 
     if (pickedFile != null) {
       selectedImagePath.value = pickedFile.path;
+      pickedImage = pickedFile;
     } else {
       Get.snackbar('Error', 'No image selected');
     }
