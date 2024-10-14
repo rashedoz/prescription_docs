@@ -8,8 +8,6 @@ import 'package:prescription_document/common/widgets/common_app_button.dart';
 import 'package:prescription_document/controllers/firebase_controller.dart';
 import 'package:prescription_document/controllers/home_controller/home_controller.dart';
 import 'package:prescription_document/models/member_model.dart';
-import 'package:prescription_document/views/members/add_member_page.dart';
-import 'package:prescription_document/views/members/member_details_page.dart';
 import 'package:prescription_document/views/visits/visits_list_page.dart';
 
 class HomePage extends StatelessWidget {
@@ -35,14 +33,14 @@ class HomePage extends StatelessWidget {
                   const CircleAvatar(
                       // Add your logic for the avatar here
                       ),
-                  SizedBox(
+                  const SizedBox(
                     width: 15,
                   ),
-                  Expanded(
+                  const Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           'Hi, Riyad 👋',
                           style: TextStyle(
                             fontSize: 20,
@@ -106,8 +104,8 @@ class HomePage extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 10,horizontal: 16),
                   gridDelegate: SliverWovenGridDelegate.count(
                     pattern: [
-                      WovenGridTile(0.9),
-                      WovenGridTile(
+                      const WovenGridTile(0.9),
+                      const WovenGridTile(
                         7 / 7,
                         // crossAxisRatio: 0.9,
                         // alignment: AlignmentDirectional.centerStart,
@@ -153,7 +151,7 @@ class HomePage extends StatelessWidget {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              child: CommonAppButton(onTapButton: () {}),
+              child: CommonAppButton(onTapButton: () {},btnContent: 'Upload Prescription/Report',btnIcon: Icons.cloud_upload_sharp,),
             )
           ],
         ),
@@ -202,7 +200,7 @@ class MemberWidget extends StatelessWidget {
             CircleAvatar(
                 radius: 30.0,
                 backgroundImage:
-                    NetworkImage('https://via.placeholder.com/150'),
+                  NetworkImage(member.imageData ?? 'https://via.placeholder.com/150'),
                 backgroundColor: Colors.transparent,
               ),
             // const Icon(Icons.person), // Replace with actual data

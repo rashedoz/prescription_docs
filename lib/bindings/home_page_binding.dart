@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:prescription_document/controllers/firebase_controller.dart';
 import 'package:prescription_document/controllers/home_controller/home_controller.dart';
+import 'package:prescription_document/controllers/image_controller/image_picker_controller.dart';
 
 class HomeBinding extends Bindings {
   @override
@@ -8,6 +9,7 @@ class HomeBinding extends Bindings {
     //TODO: Dynamic User ID when Logged In
     Get.put(HomeFirebaseController(userId: 'UID123'));
     Get.put(HomeController());
+    Get.lazyPut(()=>ImagePickerController());
 
     // final sharedPreference = await SharedPreferences.getInstance();
     // Get.lazyPut(()=>sharedPreference);

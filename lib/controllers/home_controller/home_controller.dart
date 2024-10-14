@@ -9,7 +9,7 @@ class HomeController extends GetxController {
   RxBool isSelected = false.obs;
   Future<void> addUser(BuildContext context) async {
     Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => AddMemberPage()))
+        .push(MaterialPageRoute(builder: (context) => const AddMemberPage()))
         .then((value) {
       update();
     });

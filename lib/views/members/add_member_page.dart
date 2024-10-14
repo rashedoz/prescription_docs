@@ -1,8 +1,14 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
+import 'package:prescription_document/common/app_colors.dart';
+import 'package:prescription_document/common/widgets/common_app_button.dart';
+import 'package:prescription_document/controllers/image_controller/image_picker_controller.dart';
 import 'package:prescription_document/models/member_model.dart';
 
 class AddMemberPage extends StatefulWidget {
@@ -17,8 +23,9 @@ class AddMemberPageState extends State<AddMemberPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _ageController = TextEditingController();
   final TextEditingController _relationshipController = TextEditingController();
+  final TextEditingController _birthdateController = TextEditingController();
 
-  late String birthDate;
+  late DateTime birthDate;
 
   @override
   void dispose() {
@@ -34,10 +41,11 @@ class AddMemberPageState extends State<AddMemberPage> {
     // Create a new member model
     final member = MemberModel(
       name: _nameController.text,
-      bithDate: birthDate,
+      bithDate: birthDate.toIso8601String(),
       relationship: _relationshipController.text,
-      createdAt: DateTime.now().toString(),
+      createdAt: DateTime.now().toIso8601String(),
       memberId: "MID1",
+      imageData: Get.find<ImagePickerController>().selectedImagePath.value,
     );
 
     // Get reference to Firestore
@@ -76,95 +84,169 @@ class AddMemberPageState extends State<AddMemberPage> {
       appBar: AppBar(
         title: const Text('Add Member'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                GestureDetector(
-                  onTap: () {
-                    // TODO: Implement image upload functionality
-                  },
-                  child: Container(
-                    height: 150,
-                    color: Colors.grey[200],
-                    alignment: Alignment.center,
-                    child: Icon(Icons.camera_alt, color: Colors.grey[800]),
+      body: GetBuilder<ImagePickerController>(builder: (imagePickerController) {
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  GestureDetector(
+                    onTap: () {
+                      _showImageSourceActionSheet(
+                          context, imagePickerController);
+                      // TODO: Implement image upload functionality
+                    },
+                    child: imagePickerController.selectedImagePath.value == ''
+                        ? Container(
+                            height: 150,
+                            color: const Color(0xFFCAC4ED),
+                            alignment: Alignment.center,
+                            child:
+                                Icon(Icons.camera_alt, color: Colors.grey[800]),
+                          )
+                        : Container(
+                            height: 150,
+                            color: const Color(0xFFCAC4ED),
+                            alignment: Alignment.center,
+                            child: Image.file(
+                              File(imagePickerController
+                                  .selectedImagePath.value),
+                              width: double.infinity,
+                              height: 150,
+                            ),
+                          ),
                   ),
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _nameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Patient Name',
-                    border: OutlineInputBorder(),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _nameController,
+                    decoration: const InputDecoration(
+                      labelText: 'Patient Name',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter the patient\'s name';
+                      }
+                      return null;
+                    },
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter the patient\'s name';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _ageController,
-                  decoration: const InputDecoration(
-                    labelText: 'Patient Age',
-                    border: OutlineInputBorder(),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _ageController,
+                    decoration: const InputDecoration(
+                      labelText: 'Patient Age',
+                      border: OutlineInputBorder(),
+                    ),
+                    keyboardType: TextInputType.number,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter the patient\'s age';
+                      }
+                      return null;
+                    },
                   ),
-                  keyboardType: TextInputType.number,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter the patient\'s age';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _relationshipController,
-                  decoration: const InputDecoration(
-                    labelText: 'Date',
-                    border: OutlineInputBorder(),
-                    suffixIcon: Icon(Icons.calendar_today),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _birthdateController,
+                    decoration: const InputDecoration(
+                      labelText: 'Birth Date',
+                      border: OutlineInputBorder(),
+                      suffixIcon: Icon(Icons.calendar_today,color: AppColors.primaryColor,),
+                    ),
+                    readOnly: true, // Prevent manual editing
+                    onTap: () async {
+                      DateTime? selectedDate = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(1950),
+                        lastDate: DateTime(2100),
+                      );
+                      if (selectedDate != null) {
+                        birthDate = selectedDate;
+                        _birthdateController
+                          ..text = DateFormat.yMMMd().format(birthDate)
+                          ..selection = TextSelection.fromPosition(TextPosition(
+                              offset: _birthdateController.text.length,
+                              affinity: TextAffinity.upstream));
+                      }
+                    },
                   ),
-                  readOnly: true, // Prevent manual editing
-                  onTap: () async {
-                    DateTime? selectedDate = await showDatePicker(
-                      context: context,
-                      initialDate: DateTime.now(),
-                      firstDate: DateTime(2000),
-                      lastDate: DateTime(2100),
-                    );
-                    if (selectedDate != null) {
-                      birthDate = selectedDate.toString();
-                    }
-                  },
-                ),
-                const SizedBox(height: 24),
-                ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      // TODO: Implement the logic to save the member
-                      log('Save the member');
-                      _addMemberToFirestore();
-                      // Get.back();
-                      Navigator.pop(context);
-                      // addUser();
-                    }
-                  },
-                  child: const Text('SAVE'),
-                ),
-              ],
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  TextFormField(
+                    controller: _relationshipController,
+                    decoration: const InputDecoration(
+                      labelText: 'Relationship',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter the relation with patient';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 24),
+                  CommonAppButton(
+                    onTapButton: () {
+                      if (_formKey.currentState!.validate()) {
+                        // TODO: Implement the logic to save the member
+                        log('Save the member');
+                        _addMemberToFirestore();
+                        // Get.back();
+                        Navigator.pop(context);
+                        // addUser();
+                      }
+                    },
+                    btnContent: 'SAVE',
+                    btnIcon: Icons.save_sharp,
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      }),
     );
+  }
+
+  void _showImageSourceActionSheet(
+      BuildContext context, ImagePickerController imagePickerController) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                leading: const Icon(Icons.photo_camera),
+                title: Text(
+                  'Camera',
+                  style: Get.theme.textTheme.bodyMedium,
+                ),
+                onTap: () {
+                  imagePickerController.pickImage(ImageSource.camera);
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: Text(
+                  'Gallery',
+                  style: Get.theme.textTheme.bodyMedium,
+                ),
+                onTap: () {
+                  imagePickerController.pickImage(ImageSource.gallery);
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        });
   }
 }
