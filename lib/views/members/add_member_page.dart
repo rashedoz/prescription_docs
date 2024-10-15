@@ -1,10 +1,8 @@
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:prescription_document/common/app_colors.dart';
 import 'package:prescription_document/common/widgets/common_app_button.dart';
@@ -94,7 +92,7 @@ class AddMemberPageState extends State<AddMemberPage> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
-                  UserImagePicker(containerColor: const Color(0xFFCAC4ED),),
+                  const UserImagePicker(containerColor: Color(0xFFCAC4ED),),
                   // GestureDetector(
                   //   onTap: () {
                   //     _showImageSourceActionSheet(

@@ -52,3 +52,10 @@ Visits Sub-Collection (Under Each Member)
                     |-- date: Timestamp
                     |-- reason: "Annual Checkup"
                     |-- createdAt: Timestamp
+users (collection)
+-- |- <user-id> (document)
+--     |- uid: "unique-user-id"
+--     |- email: "user@example.com"
+--     |- username: "username"
+--     |- profileImageUrl: "https://firebase-storage-url.com/profile-pic.jpg"
+--     |- createdAt: Timestamp                    

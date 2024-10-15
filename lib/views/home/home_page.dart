@@ -7,6 +7,7 @@ import 'package:prescription_document/common/app_colors.dart';
 import 'package:prescription_document/common/widgets/common_app_button.dart';
 import 'package:prescription_document/controllers/firebase_controller.dart';
 import 'package:prescription_document/controllers/home_controller/home_controller.dart';
+import 'package:prescription_document/controllers/user_controller/user_controller.dart';
 import 'package:prescription_document/models/member_model.dart';
 import 'package:prescription_document/views/auth/auth_screen.dart';
 import 'package:prescription_document/views/visits/visits_list_page.dart';
@@ -26,56 +27,66 @@ class HomePage extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  InkWell(
-                    onTap: (){
-                      Get.to(()=>const AuthScreen());
-                    },
-                    child: const CircleAvatar(
-                        // Add your logic for the avatar here
-                        ),
-                  ),
-                  const SizedBox(
-                    width: 15,
-                  ),
-                  const Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Hi, Riyad 👋',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
+            GetBuilder<UserController>(builder: (userController) {
+              var userData = userController.getUserData();
+              // userController.getUserData();
+              return userController.isUserLoading.value
+                  ? const CircularProgressIndicator()
+                  : Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 5),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              Get.to(() => const AuthScreen());
+                            },
+                            child: CircleAvatar(
+                              radius: 30.0,
+                              backgroundImage:
+                                  NetworkImage(userData['image_url']),
+                              backgroundColor: Colors.transparent,
+                            ),
                           ),
-                        ),
-                        Text(
-                          'User Role',
-                          style: TextStyle(
-                              color: Colors.black45,
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold),
-                        )
-                      ],
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(
-                      Icons.notifications,
-                      color: AppColors.primaryColor,
-                      size: 30,
-                    ),
-                    onPressed: () {
-                      // Add your logic for the settings icon here
-                    },
-                  ),
-                ],
-              ),
-            ),
+                          const SizedBox(
+                            width: 15,
+                          ),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Hi, ${userData['username']} 👋',
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                // Text(
+                                //   'User Role',
+                                //   style: TextStyle(
+                                //       color: Colors.black45,
+                                //       fontSize: 13,
+                                //       fontWeight: FontWeight.bold),
+                                // )
+                              ],
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.notifications,
+                              color: AppColors.primaryColor,
+                              size: 30,
+                            ),
+                            onPressed: () {
+                              // Add your logic for the settings icon here
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+            }),
             // Expanded(
             //   child: Obx(() {
             //     if (memberController.members.isEmpty) {
@@ -107,7 +118,8 @@ class HomePage extends StatelessWidget {
                 // }
 
                 return GridView.custom(
-                  padding: const EdgeInsets.symmetric(vertical: 10,horizontal: 16),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
                   gridDelegate: SliverWovenGridDelegate.count(
                     pattern: [
                       const WovenGridTile(0.9),
@@ -124,10 +136,11 @@ class HomePage extends StatelessWidget {
                   childrenDelegate: SliverChildBuilderDelegate(
                     childCount: memberController.members.length + 1,
                     (context, index) {
-                      
                       if (index < memberController.members.length) {
                         return MemberWidget(
-                            member: memberController.members[index],index: index,);
+                          member: memberController.members[index],
+                          index: index,
+                        );
                       } else {
                         return const AddFamilyMemberButton();
                       }
@@ -157,7 +170,11 @@ class HomePage extends StatelessWidget {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              child: CommonAppButton(onTapButton: () {},btnContent: 'Upload Prescription/Report',btnIcon: Icons.cloud_upload_sharp,),
+              child: CommonAppButton(
+                onTapButton: () {},
+                btnContent: 'Upload Prescription/Report',
+                btnIcon: Icons.cloud_upload_sharp,
+              ),
             )
           ],
         ),
@@ -177,54 +194,58 @@ class HomePage extends StatelessWidget {
 class MemberWidget extends StatelessWidget {
   final MemberModel member;
   final int index;
-  
 
-  const MemberWidget({Key? key, required this.member,required this.index}) : super(key: key);
+  const MemberWidget({Key? key, required this.member, required this.index})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    
     // bool isSelected;
-    return GetBuilder<HomeController>(builder: (controller){
+    return GetBuilder<HomeController>(builder: (controller) {
       bool isSelected = controller.selectedIndex.value == index;
       return InkWell(
-      onTap: () {
-        Get.find<HomeController>().selectedPatient(index);
+        onTap: () {
+          Get.find<HomeController>().selectedPatient(index);
 
-        log('Going to ${member.name} page');
-        Get.to(() => VisitsPage(member: member));
-      },
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color:isSelected? AppColors.primaryColor: Colors.grey[200],
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircleAvatar(
+          log('Going to ${member.name} page');
+          Get.to(() => VisitsPage(member: member));
+        },
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: isSelected ? AppColors.primaryColor : Colors.grey[200],
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircleAvatar(
                 radius: 30.0,
-                backgroundImage:
-                  NetworkImage(member.imageData ?? 'https://via.placeholder.com/150'),
+                backgroundImage: NetworkImage(member.imageData),
                 backgroundColor: Colors.transparent,
               ),
-            // const Icon(Icons.person), // Replace with actual data
-            Text(member.name,style: TextStyle(color: isSelected?Colors.white:Colors.black,fontSize: 14,fontWeight: FontWeight.w600),), // Replace with actual data
-            // Age from birthdate, Format and show birthdate("2023-11-18 00:00:00.000") string as DD/MM/YYYY
+              // const Icon(Icons.person), // Replace with actual data
+              Text(
+                member.name,
+                style: TextStyle(
+                    color: isSelected ? Colors.white : Colors.black,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600),
+              ), // Replace with actual data
+              // Age from birthdate, Format and show birthdate("2023-11-18 00:00:00.000") string as DD/MM/YYYY
 
-            // Text(
-            //   "Birth Date: ${member.bithDate}",
-            //   // Text decoration small and italic
-            //   style: const TextStyle(
-            //     fontSize: 12,
-            //     fontStyle: FontStyle.italic,
-            //   ),
-            // ), // Replace with actual data
-          ],
+              // Text(
+              //   "Birth Date: ${member.bithDate}",
+              //   // Text decoration small and italic
+              //   style: const TextStyle(
+              //     fontSize: 12,
+              //     fontStyle: FontStyle.italic,
+              //   ),
+              // ), // Replace with actual data
+            ],
+          ),
         ),
-      ),
-    );
+      );
     });
   }
 }
