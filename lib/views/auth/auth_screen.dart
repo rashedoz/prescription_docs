@@ -17,8 +17,9 @@ class AuthScreen extends StatelessWidget {
       backgroundColor: AppColors.scaffoldBackgroundColor,
       body: GetBuilder<UserController>(builder: (userController){
         return AuthForm(
-        submitFn: userController.signUp,
-        isLoading: userController.isLoading.value,
+        submitRegFn: userController.signUp,
+        submitLoginFn: userController.signIn,
+        // isLoading: true,
       );
       }),
     );

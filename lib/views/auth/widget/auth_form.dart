@@ -9,15 +9,16 @@ import 'package:prescription_document/controllers/user_controller/user_controlle
 import 'package:prescription_document/views/auth/widget/user_image_picker.dart';
 
 class AuthForm extends StatefulWidget {
-  final bool isLoading;
+  
   // final Function submitFn;
   final void Function(
     String email,
     String password,
     String username,
     XFile image,
-  ) submitFn;
-  const AuthForm({super.key, required this.submitFn, required this.isLoading});
+  ) submitRegFn;
+  final void Function(String email,String password) submitLoginFn;
+  AuthForm({super.key, required this.submitLoginFn,required this.submitRegFn, });
   
 
   @override
@@ -26,13 +27,13 @@ class AuthForm extends StatefulWidget {
 
 class _AuthFormState extends State<AuthForm> {
   final _formKey = GlobalKey<FormState>();
-  var _isLogin = true;
+  var isLogin = true;
   String _userEmail = '';
   String _userName = '';
   String _userPassword = '';
   
 
-  void _trySubmit() {
+  void _tryRegisterSubmit() {
     final isValid = _formKey.currentState!.validate();
     FocusScope.of(context).unfocus();
     // if (_userImageFile == null && !_isLogin) {
@@ -45,9 +46,28 @@ class _AuthFormState extends State<AuthForm> {
     if (isValid) {
       _formKey.currentState!.save();
       log(_userName);
-      widget.submitFn(
-        _userEmail.trim(), _userPassword.trim(),   _userName.trim(),
+      widget.submitRegFn(
+        _userEmail.trim(), _userPassword.trim(),_userName.trim(),
            Get.find<UserController>().pickedImage!
+          );
+    }
+  }
+
+  void _tryLoginSubmit(){
+    final isValid = _formKey.currentState!.validate();
+    FocusScope.of(context).unfocus();
+    // if (_userImageFile == null && !_isLogin) {
+    //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    //     content: const Text('Please Pick An Image'),
+    //     backgroundColor: Colors.red,
+    //   ));
+    // }
+
+    if (isValid) {
+      _formKey.currentState!.save();
+      log(_userName);
+      widget.submitLoginFn(
+        _userEmail.trim(), _userPassword.trim()
           );
     }
   }
@@ -65,7 +85,7 @@ class _AuthFormState extends State<AuthForm> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (!_isLogin)
+                  if (!isLogin)
                     const UserImagePicker(
                       containerColor: Colors.white,
                     ),
@@ -93,8 +113,8 @@ class _AuthFormState extends State<AuthForm> {
                       _userEmail = value!;
                     },
                   ),
-                  if (!_isLogin) const SizedBox(height: 16),
-                  if (!_isLogin)
+                  if (!isLogin) const SizedBox(height: 16),
+                  if (!isLogin)
                     TextFormField(
                       key: const ValueKey('name'),
                       autocorrect: true,
@@ -136,17 +156,17 @@ class _AuthFormState extends State<AuthForm> {
                     height: 15,
                   ),
                   CommonAppButton(
-                      onTapButton: _trySubmit,
-                      btnContent: _isLogin ? 'Login' : 'SignUp',
+                      onTapButton: isLogin? _tryLoginSubmit: _tryRegisterSubmit,
+                      btnContent: isLogin ? 'Login' : 'SignUp',
                       btnIcon: Icons.app_registration),
                   TextButton(
                     onPressed: () {
                       setState(() {
-                        _isLogin = !_isLogin;
+                        isLogin = !isLogin;
                       });
                     },
                     child: Text(
-                      _isLogin
+                      isLogin
                           ? 'Create New Account'
                           : 'Already have an account',
                       style: Get.theme.textTheme.bodyMedium?.copyWith(

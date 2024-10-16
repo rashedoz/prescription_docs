@@ -1,12 +1,16 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:prescription_document/common/app_colors.dart';
 import 'package:prescription_document/common/widgets/common_app_button.dart';
 import 'package:prescription_document/controllers/image_controller/image_picker_controller.dart';
+import 'package:prescription_document/controllers/user_controller/user_controller.dart';
 import 'package:prescription_document/models/member_model.dart';
 import 'package:prescription_document/views/auth/widget/user_image_picker.dart';
 
@@ -23,6 +27,11 @@ class AddMemberPageState extends State<AddMemberPage> {
   final TextEditingController _ageController = TextEditingController();
   final TextEditingController _relationshipController = TextEditingController();
   final TextEditingController _birthdateController = TextEditingController();
+  UserController userController = UserController();
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  FirebaseStorage firebaseStorage = FirebaseStorage.instance;
+  // FirebaseAuth auth = FirebaseAuth.instance;
+
 
   late DateTime birthDate;
 
@@ -35,23 +44,67 @@ class AddMemberPageState extends State<AddMemberPage> {
     super.dispose();
   }
 
+  // if (user != null) {
+  //       // Upload profile image to Firebase Storage if selected
+  //       String profileImageUrl = '';
+  //       if(selectedProfileImagePath.value != ''){
+  //       // if (selectedProfileImagePath.value != '') {
+  //         String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+  //         var storageRef = firebaseStorage.ref().child('User').child('own').child('${user.uid}$fileName.jpg');
+  //         await storageRef.putFile(File(selectedProfileImagePath.value));
+  //         profileImageUrl = await storageRef.getDownloadURL();
+  //       }
+
+  //       // Save user data in Firestore
+  //       await FirebaseFirestore.instance
+  //           .collection('users')
+  //           .doc(user.uid)
+  //           .set({
+  //         'username': username,
+  //         'email': email,
+  //         'image_url': profileImageUrl,
+  //         'uid': user.uid,
+  //         'createdAt': Timestamp.now(),
+  //       });
+      
+
+  //       // Save user data locally using GetStorage
+  //       localStorage.write('uid', user.uid);
+  //       localStorage.write('email', email);
+  //       localStorage.write('username', username);
+  //       localStorage.write('profileImageUrl', profileImageUrl);
+
+  //       Get.snackbar('Success', 'User signed up successfully',backgroundColor: Colors.green);
+  //       homeFirebaseController.setUserId(user.uid);
+  //       Get.offAll(const HomePage());
+  //     }
+
   // Add Member to the current User's Firestore collection
   void _addMemberToFirestore() async {
-    // Create a new member model
-    final member = MemberModel(
+    final userData = userController.getUserData();
+    String memberId = firestore.collection('users').doc(userData['uid']).collection('members').doc().id;
+
+    if(memberId.isNotEmpty){
+      String profileImageUrl = '';
+      if(Get.find<UserController>().selectedProfileImagePath.value != ''){
+        String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+        var storageRef = firebaseStorage.ref().child('User').child('patient').child('$memberId$fileName.jpg');
+        await storageRef.putFile(File(Get.find<UserController>().selectedProfileImagePath.value));
+        profileImageUrl = await storageRef.getDownloadURL();
+      }
+      final member = MemberModel(
       name: _nameController.text,
       bithDate: birthDate.toIso8601String(),
       relationship: _relationshipController.text,
       createdAt: DateTime.now().toIso8601String(),
-      memberId: "MID1",
-      imageData: Get.find<ImagePickerController>().selectedImagePath.value,
+      memberId: memberId,// "MID1",
+      imageData: profileImageUrl,
     );
-
-    // Get reference to Firestore
-    CollectionReference members = FirebaseFirestore.instance
+    CollectionReference members = firestore
         .collection('users')
         // Static User ID for testing
-        .doc("UID123")
+        // .doc("UID123")
+        .doc(userData['uid'])
         .collection('members');
 
     // Add to Firestore under the test user
@@ -59,6 +112,30 @@ class AddMemberPageState extends State<AddMemberPage> {
         .add(member.toJson())
         .then((docRef) => log('Member added with ID: ${docRef.id}'))
         .catchError((error) => log('Failed to add member: $error'));
+    }
+    // Create a new member model
+    // final member = MemberModel(
+    //   name: _nameController.text,
+    //   bithDate: birthDate.toIso8601String(),
+    //   relationship: _relationshipController.text,
+    //   createdAt: DateTime.now().toIso8601String(),
+    //   memberId: memberId,// "MID1",
+    //   imageData: Get.find<UserController>().selectedProfileImagePath.value,
+    // );
+
+    // Get reference to Firestore
+    // CollectionReference members = firestore
+    //     .collection('users')
+    //     // Static User ID for testing
+    //     // .doc("UID123")
+    //     .doc(userData['uid'])
+    //     .collection('members');
+
+    // // Add to Firestore under the test user
+    // await members
+    //     .add(member.toJson())
+    //     .then((docRef) => log('Member added with ID: ${docRef.id}'))
+    //     .catchError((error) => log('Failed to add member: $error'));
   }
 
   // Future<void> addUser() async {

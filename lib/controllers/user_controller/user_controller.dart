@@ -7,7 +7,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:prescription_document/controllers/firebase_controller.dart';
 import 'package:prescription_document/controllers/image_controller/image_picker_controller.dart';
+import 'package:prescription_document/views/auth/auth_screen.dart';
 import 'package:prescription_document/views/home/home_page.dart';
 
 class UserController extends GetxController {
@@ -16,12 +18,55 @@ class UserController extends GetxController {
   FirebaseStorage firebaseStorage = FirebaseStorage.instance;
   GetStorage localStorage = GetStorage();
   ImagePickerController imagePickerController = ImagePickerController();
-   Rx<bool> isLoggedIn = false.obs;
+  HomeFirebaseController homeFirebaseController = HomeFirebaseController();
+  Rx<bool> isLoggedIn = false.obs;
 
   var isLoading = false.obs;
   var isUserLoading = false.obs;
   var selectedProfileImagePath = ''.obs;
+  var selectedMemberImagePath = ''.obs;
   XFile? pickedImage;
+  String get userId => localStorage.read('uid') ?? '';
+
+  @override
+  onInit(){
+    super.onInit();
+    checkLoginStatus();
+    getUserData();
+  }
+
+  void logoutUser() async {
+    
+
+
+    // Clear Controllers
+    // Get.find<CheckoutFormController>().clearControllers();
+    // Get.find<CheckOutController>().clearCheckoutController();
+    // Get.find<CartController>().clearCartController();
+    // Get.find<ProductController>().clearWishList();
+
+    // Clear Login Method
+    // await prefs.clear();
+    // loginMethod.value = "";
+    isLoggedIn.value = false;
+    localStorage.erase();
+    // userData.value = UserModel();
+    // showSnackbar(message: 'Log out successfull', title: 'success');
+
+    // Get
+    Get.off(() => const AuthScreen());
+  }
+
+
+  Future<bool> checkLoginStatus() async {
+    if(userId.isNotEmpty){
+      isLoggedIn.value = true;
+    }else{
+      isLoggedIn.value = false;
+    }
+    
+    return isLoggedIn.value;
+  }
 
   // Future<void> pickProfileImage() async {
   //   final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
@@ -40,14 +85,14 @@ class UserController extends GetxController {
       selectedProfileImagePath.value = pickedFile.path;
       pickedImage = pickedFile;
     } else {
-      Get.snackbar('Error', 'No image selected');
+      Get.snackbar('Error', 'No image selected',backgroundColor: Colors.red);
     }
     update();
   }
 
   Future<void> signUp(String email, String password, String username, XFile image) async {
     try {
-      isLoading.value = true;
+      // isLoading.value = true;
 
       // Sign up with Firebase Authentication
       UserCredential userCredential = await auth.createUserWithEmailAndPassword(
@@ -89,13 +134,12 @@ class UserController extends GetxController {
         localStorage.write('profileImageUrl', profileImageUrl);
 
         Get.snackbar('Success', 'User signed up successfully',backgroundColor: Colors.green);
+        homeFirebaseController.setUserId(user.uid);
         Get.offAll(const HomePage());
       }
     } catch (e) {
       Get.snackbar('Error', e.toString());
-    } finally {
-      isLoading.value = false;
-    }
+    } 
     update();
   }
 
@@ -109,40 +153,38 @@ class UserController extends GetxController {
       'image_url': localStorage.read('profileImageUrl') ?? '',
     };
   }
-  // Future<void> signIn(String email, String password) async {
-  //   try {
-  //     isLoading.value = true;
+  Future<void> signIn(String email, String password) async {
+    try {
+      // isLoading.value = true;
 
-  //     // Sign in with Firebase Authentication
-  //     UserCredential userCredential = await auth.signInWithEmailAndPassword(
-  //       email: email,
-  //       password: password,
-  //     );
+      // Sign in with Firebase Authentication
+      UserCredential userCredential = await auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
 
-  //     User? user = userCredential.user;
-  //     if (user != null) {
-  //       // Fetch user data from Firestore
-  //       DocumentSnapshot userDoc = await firestore.collection('users').doc(user.uid).get();
-  //       if (userDoc.exists) {
-  //         String username = userDoc['username'];
-  //         String profileImageUrl = userDoc['image_url'];
+      User? user = userCredential.user;
+      if (user != null) {
+        // Fetch user data from Firestore
+        DocumentSnapshot userDoc = await firestore.collection('users').doc(user.uid).get();
+        if (userDoc.exists) {
+          String username = userDoc['username'];
+          String profileImageUrl = userDoc['image_url'];
 
-  //         // Save user data locally in GetStorage
-  //         localStorage.write('uid', user.uid);
-  //         localStorage.write('email', email);
-  //         localStorage.write('username', username);
-  //         localStorage.write('profileImageUrl', profileImageUrl);
+          // Save user data locally in GetStorage
+          localStorage.write('uid', user.uid);
+          localStorage.write('email', email);
+          localStorage.write('username', username);
+          localStorage.write('profileImageUrl', profileImageUrl);
 
-  //         // Navigate to Home Page
-  //         Get.offAll(HomePage());  // Replace with your HomePage widget
-  //       }
-  //     }
-  //   } catch (e) {
-  //     Get.snackbar('Error', e.toString());
-  //   } finally {
-  //     isLoading.value = false;
-  //   }
-  // }
+          // Navigate to Home Page
+          Get.offAll(HomePage());  // Replace with your HomePage widget
+        }
+      }
+    } catch (e) {
+      Get.snackbar('Error', e.toString());
+    } 
+  }
 
   // Function to clear user data from GetStorage (logout)
   void clearUserData() {

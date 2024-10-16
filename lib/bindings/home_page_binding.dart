@@ -8,10 +8,10 @@ class HomeBinding extends Bindings {
   @override
   void dependencies() async {
     //TODO: Dynamic User ID when Logged In
-    Get.put(HomeFirebaseController(userId: 'UID123'));
+    Get.lazyPut(()=>HomeFirebaseController(),fenix: true);
     Get.put(HomeController());
     Get.lazyPut(()=>ImagePickerController());
-    Get.lazyPut(()=>UserController());
+    Get.lazyPut(()=>UserController(),fenix: true);
 
     // final sharedPreference = await SharedPreferences.getInstance();
     // Get.lazyPut(()=>sharedPreference);

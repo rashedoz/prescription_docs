@@ -10,6 +10,7 @@ import 'package:prescription_document/controllers/home_controller/home_controlle
 import 'package:prescription_document/controllers/user_controller/user_controller.dart';
 import 'package:prescription_document/models/member_model.dart';
 import 'package:prescription_document/views/auth/auth_screen.dart';
+import 'package:prescription_document/views/drawer/custom_drawer.dart';
 import 'package:prescription_document/views/visits/visits_list_page.dart';
 
 class HomePage extends StatelessWidget {
@@ -17,22 +18,27 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final HomeFirebaseController memberController =
+     HomeFirebaseController memberController =
         Get.find<HomeFirebaseController>();
+        // memberController.listenToMembers();
 
     return Scaffold(
       // appBar: AppBar(
       //   title: const Text('Home'),
       // ),
       body: SafeArea(
-        child: Column(
+        child: GetBuilder<UserController>(builder: (userController){
+          var userData = userController.getUserData();
+          
+          log('user id:${userData['uid']}');
+          return userData['uid']!=''? Column(
           children: [
-            GetBuilder<UserController>(builder: (userController) {
-              var userData = userController.getUserData();
+            // GetBuilder<UserController>(builder: (userController) {
+            //   var userData = userController.getUserData();
               // userController.getUserData();
-              return userController.isUserLoading.value
+              userController.isUserLoading.value
                   ? const CircularProgressIndicator()
-                  : Padding(
+                  : userData['username'] != null? Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 5),
                       child: Row(
@@ -40,12 +46,12 @@ class HomePage extends StatelessWidget {
                         children: [
                           InkWell(
                             onTap: () {
-                              Get.to(() => const AuthScreen());
+                              Get.to(() => const CustomDrawer());
                             },
                             child: CircleAvatar(
                               radius: 30.0,
                               backgroundImage:
-                                  NetworkImage(userData['image_url']),
+                                   NetworkImage(userData['image_url']),
                               backgroundColor: Colors.transparent,
                             ),
                           ),
@@ -63,13 +69,13 @@ class HomePage extends StatelessWidget {
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                // Text(
-                                //   'User Role',
-                                //   style: TextStyle(
-                                //       color: Colors.black45,
-                                //       fontSize: 13,
-                                //       fontWeight: FontWeight.bold),
-                                // )
+                                Text(
+                                  memberController.userId.value,
+                                  style: TextStyle(
+                                      color: Colors.black45,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold),
+                                )
                               ],
                             ),
                           ),
@@ -85,8 +91,12 @@ class HomePage extends StatelessWidget {
                           ),
                         ],
                       ),
-                    );
-            }),
+                    ): AuthScreen(),
+                    // InkWell(
+                    //   onTap: (){
+                    //     Get.to(() => const AuthScreen());
+                    //   },
+                    //   child: Text('No data found.\nTap to signup')),
             // Expanded(
             //   child: Obx(() {
             //     if (memberController.members.isEmpty) {
@@ -177,16 +187,10 @@ class HomePage extends StatelessWidget {
               ),
             )
           ],
-        ),
+        ): AuthScreen();
+        
+        }),
       ),
-
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {
-      //     // Navigate to the MemberDetailsPage
-      //     Get.to(() => const MemberDetailsPage());
-      //   },
-      //   child: const Icon(Icons.add),
-      // ),
     );
   }
 }

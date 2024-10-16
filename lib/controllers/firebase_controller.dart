@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:prescription_document/controllers/user_controller/user_controller.dart';
 import 'package:prescription_document/models/member_model.dart';
 import 'package:prescription_document/models/prescription_model.dart';
 import 'package:prescription_document/models/reports_model.dart';
@@ -9,20 +10,34 @@ import 'package:prescription_document/models/visit_model.dart';
 
 class HomeFirebaseController extends GetxController {
   var members = <MemberModel>[].obs; // Observable list of members
-  final String userId; // ID of the specific user
+  // final String userId; // ID of the specific user
 
   var visits = <VisitModel>[].obs; // Observable list of visits
   var prescriptions =
       <PrescriptionModel>[].obs; // Observable list of prescriptions
   var report = <ReportModel>[].obs; // Observable list of reports
 
-  HomeFirebaseController({required this.userId});
+  // HomeFirebaseController({required this.userId});
+  var userId = ''.obs;
+  // UserController userController = UserController();
+
+  // When the user logs in or signs up
+  void setUserId(String id) {
+    userId.value = id;
+    update();
+  }
 
   @override
   void onInit() {
     super.onInit();
-    members.bindStream(
-        listenToMembers()); // Bind the stream to the observable list
+
+    var userData = Get.find<UserController>().getUserData();
+    userId.value = userData['uid'];
+    // print("User ID: ${userData['uid']}");
+    if (userId.value.isNotEmpty) {
+      members.bindStream(listenToMembers());
+    }
+    // Bind the stream to the observable list
   }
 
   // Members collection stream
@@ -30,7 +45,7 @@ class HomeFirebaseController extends GetxController {
     // Stream of members from Firestore
     return FirebaseFirestore.instance
         .collection('users')
-        .doc(userId)
+        .doc(userId.value)
         .collection('members')
         .snapshots()
         .map((query) => query.docs
@@ -48,7 +63,7 @@ class HomeFirebaseController extends GetxController {
     // Stream of visits from Firestore
     return FirebaseFirestore.instance
         .collection('users')
-        .doc(userId)
+        .doc(userId.value)
         .collection('members')
         .doc(member.memberId)
         .collection('visits')
@@ -75,7 +90,7 @@ class HomeFirebaseController extends GetxController {
     // Stream of prescriptions from Firestore
     return FirebaseFirestore.instance
         .collection('users')
-        .doc(userId)
+        .doc(userId.value)
         .collection('members')
         .doc(member.memberId)
         .collection('visits')
@@ -103,7 +118,7 @@ class HomeFirebaseController extends GetxController {
     // Stream of prescriptions from Firestore
     return FirebaseFirestore.instance
         .collection('users')
-        .doc(userId)
+        .doc(userId.value)
         .collection('members')
         .doc(member.memberId)
         .collection('visits')
@@ -121,7 +136,7 @@ class HomeFirebaseController extends GetxController {
     // Get reference to Firestore
     CollectionReference prescriptions = FirebaseFirestore.instance
         .collection('users')
-        .doc(userId)
+        .doc(userId.value)
         .collection('members')
         .doc(member.memberId)
         .collection('visits')
@@ -141,7 +156,7 @@ class HomeFirebaseController extends GetxController {
     // Get reference to Firestore
     CollectionReference reports = FirebaseFirestore.instance
         .collection('users')
-        .doc(userId)
+        .doc(userId.value)
         .collection('members')
         .doc(member.memberId)
         .collection('visits')
@@ -161,7 +176,7 @@ class HomeFirebaseController extends GetxController {
     // Get reference to Firestore
     CollectionReference visits = FirebaseFirestore.instance
         .collection('users')
-        .doc(userId)
+        .doc(userId.value)
         .collection('members')
         .doc(member.memberId)
         .collection('visits');
@@ -178,7 +193,7 @@ class HomeFirebaseController extends GetxController {
     // Get reference to Firestore
     CollectionReference members = FirebaseFirestore.instance
         .collection('users')
-        .doc(userId)
+        .doc(userId.value)
         .collection('members');
 
     // Add to Firestore under the test user
@@ -192,7 +207,7 @@ class HomeFirebaseController extends GetxController {
     // Get reference to Firestore
     CollectionReference members = FirebaseFirestore.instance
         .collection('users')
-        .doc(userId)
+        .doc(userId.value)
         .collection('members');
 
     // Update to Firestore under the test user
@@ -207,7 +222,7 @@ class HomeFirebaseController extends GetxController {
     // Get reference to Firestore
     CollectionReference members = FirebaseFirestore.instance
         .collection('users')
-        .doc(userId)
+        .doc(userId.value)
         .collection('members');
 
     // Delete from Firestore under the test user
