@@ -192,33 +192,33 @@ class UserController extends GetxController {
   }
 
 
-  Future<void> fetchUserInfo() async {
-    try {
-      isUserLoading.value = true;
+  // Future<void> fetchUserInfo() async {
+  //   try {
+  //     isUserLoading.value = true;
 
-      // Get the current user
-      User? user = auth.currentUser;
-      if (user != null) {
-        // Fetch user data from Firestore
-        DocumentSnapshot userDoc = await firestore.collection('users').doc(user.uid).get();
+  //     // Get the current user
+  //     User? user = auth.currentUser;
+  //     if (user != null) {
+  //       // Fetch user data from Firestore
+  //       DocumentSnapshot userDoc = await firestore.collection('users').doc(user.uid).get();
 
-        if (userDoc.exists) {
-          // Save user data in GetStorage for local access
-          localStorage.write('uid', userDoc['uid']);
-          localStorage.write('email', userDoc['email']);
-          localStorage.write('username', userDoc['username']);
-          localStorage.write('profileImageUrl', userDoc['image_url']);
+  //       if (userDoc.exists) {
+  //         // Save user data in GetStorage for local access
+  //         localStorage.write('uid', userDoc['uid']);
+  //         localStorage.write('email', userDoc['email']);
+  //         localStorage.write('username', userDoc['username']);
+  //         localStorage.write('profileImageUrl', userDoc['image_url']);
 
-          Get.snackbar('Success', 'User data fetched successfully');
-        }
-      }
-    } catch (e) {
-      Get.snackbar('Error', 'Failed to fetch user info');
-    } finally {
-      isUserLoading.value = false;
-    }
-    update();
-  }
+  //         Get.snackbar('Success', 'User data fetched successfully');
+  //       }
+  //     }
+  //   } catch (e) {
+  //     Get.snackbar('Error', 'Failed to fetch user info');
+  //   } finally {
+  //     isUserLoading.value = false;
+  //   }
+  //   update();
+  // }
 
 
 

@@ -22,23 +22,20 @@ class HomePage extends StatelessWidget {
         Get.find<HomeFirebaseController>();
         // memberController.listenToMembers();
 
-    return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text('Home'),
-      // ),
+    return GetBuilder<UserController>(builder: (userController){
+      var userData = userController.getUserData();
+      return  userData['uid']!=''? Scaffold(
+     
       body: SafeArea(
         child: GetBuilder<UserController>(builder: (userController){
-          var userData = userController.getUserData();
+          
           
           log('user id:${userData['uid']}');
-          return userData['uid']!=''? Column(
+          return Column(
           children: [
-            // GetBuilder<UserController>(builder: (userController) {
-            //   var userData = userController.getUserData();
-              // userController.getUserData();
               userController.isUserLoading.value
                   ? const CircularProgressIndicator()
-                  : userData['username'] != null? Padding(
+                  :  Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 5),
                       child: Row(
@@ -91,7 +88,7 @@ class HomePage extends StatelessWidget {
                           ),
                         ],
                       ),
-                    ): AuthScreen(),
+                    ),
                     // InkWell(
                     //   onTap: (){
                     //     Get.to(() => const AuthScreen());
@@ -187,11 +184,12 @@ class HomePage extends StatelessWidget {
               ),
             )
           ],
-        ): AuthScreen();
+        );
         
         }),
       ),
-    );
+    ):const AuthScreen();
+    });
   }
 }
 
